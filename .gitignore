@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Data
+entradas_**.csv
+fuente_unica_entradas_**.csv
