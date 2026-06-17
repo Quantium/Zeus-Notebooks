@@ -16,6 +16,10 @@ scikit-learn>=1.3.0
 scipy>=1.11.0
 joblib>=1.3.0
 
+# ── Series de tiempo (Timeseries.ipynb, prediccion_horas_hombre.ipynb) ──
+statsmodels>=0.14.0
+prophet>=1.1.5   # arrastra cmdstanpy y holidays
+
 # ── Acceso a la BD Zeus (Neon / Supabase, postgresql://) ──
 SQLAlchemy>=2.0.0
 psycopg2-binary>=2.9.0
