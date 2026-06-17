@@ -1,28 +1,31 @@
 # Zeus-Notebooks
 
-## ⚠️ Deuda técnica — fuente de datos del dashboard horario
+## Fuente de datos del dashboard horario — API SGA (migración completada)
 
-**Principio:** la *fuente única de la verdad* debe ser el **API SGA** (`POST
-/galileo/lisa/geninf/isp/sga_entradas`). Todo lo demás se construye sobre esa importación.
+**Principio:** la *fuente única de la verdad* es el **API SGA** (`POST
+/galileo/lisa/geninf/isp/sga_entradas`). Todo se construye sobre esa importación.
 
-**Excepción temporal (a revertir):** el dashboard de *carga de trabajo por hora* de
-`fuente_unica_entradas.ipynb` (**sección 6**) **NO usa el API**, sino que lee directamente
-de la **BD Zeus** (tabla `ds_entradas`, vía `ZEUS_DATABASE_URL`).
+**Estado (resuelto):** el dashboard de *carga de trabajo por hora* de
+`fuente_unica_entradas.ipynb` (**sección 6**) y el pronóstico de horas hombre de
+`prediccion_horas_hombre.ipynb` ya leen del **API SGA**, no de la BD Zeus.
 
-**Por qué:** el API SGA devuelve las fechas **sin hora** (`fecha_gen` / `fecha_inicio` /
-`fecha_fin` llegan como `dd/mm/aaaa`, todas a las 00:00). La BD Zeus sí conserva la marca de
-tiempo completa (esos campos son `TIMESTAMP` con `HH:MM:SS` reales en `ds_entradas`), y sin
-hora es imposible analizar la carga por hora ni qué usuarios están activos en cada hora del
-día.
+**Antecedente:** durante un tiempo el API SGA devolvía las fechas **sin hora** (`fecha_gen` /
+`fecha_inicio` / `fecha_fin` llegaban como `dd/mm/aaaa`, todas a las 00:00), así que esos
+análisis horarios leían directamente la BD Zeus (tabla `ds_entradas`, vía `ZEUS_DATABASE_URL`),
+donde esos campos eran `TIMESTAMP` con `HH:MM:SS` reales. **Hoy el API ya entrega la hora
+real**, por lo que esa excepción quedó cerrada.
 
-**Qué hacer cuando el API entregue las horas (TODO de migración):**
+**Lo que cambió en la migración:**
 
-1. Cuando el endpoint `sga_entradas` empiece a devolver `fecha_inicio` (y/o `fecha_gen` /
-   `fecha_fin`) **con hora**, hay que **mover la sección 6 de vuelta al API**.
-2. En la celda de carga de la sección 6, reemplazar la lectura `pd.read_sql(... ds_entradas
-   ..., ZEUS_DATABASE_URL)` por el `df_limpio` que ya produce el API (secciones 1–3), y
-   ajustar la limpieza de fechas para que **preserve la hora** (hoy `pd.to_datetime(...,
-   format="mixed", dayfirst=True)` ya la conservaría si el API la enviara).
-3. Eliminar la dependencia de `ZEUS_DATABASE_URL` en ese notebook y validar que el dashboard
-   horario sale igual con datos del API.
-4. Tras eso, **el API vuelve a ser la fuente única** (objetivo del repo).
+1. `fuente_unica_entradas.ipynb` §6 reutiliza el `df_limpio` que ya producen las secciones
+   1–5 desde el API; la ventana del dashboard sigue al parámetro `FECHA_GEN`.
+2. `prediccion_horas_hombre.ipynb` consulta el API con `fecha_gen` como **cota inferior**
+   (una fecha temprana trae toda la historia disponible en una sola llamada) y arma la serie
+   horaria sobre `fecha_inicio`.
+3. Se eliminó la dependencia de `ZEUS_DATABASE_URL` en ambos notebooks. (Los notebooks
+   heredados por dominio —`recibo.ipynb`, `surtido.ipynb`, etc.— no se tocaron.)
+4. El API vuelve a ser la **fuente única** (objetivo del repo).
+
+**Nota sobre `p_fecha_gen`:** funciona como cota inferior ("de esta fecha en adelante"), no
+como filtro de día exacto; por eso una sola llamada con fecha temprana reconstruye toda la
+serie histórica disponible (~5–6 meses al momento de la migración).
