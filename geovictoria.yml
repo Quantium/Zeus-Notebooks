@@ -1,0 +1,1210 @@
+openapi: 3.0.3
+info:
+  title: GeoVictoria Customer API
+  description: |
+    API pública de GeoVictoria para integración de sistemas externos. Permite gestionar
+    asistencia, usuarios, turnos, permisos, marcas, grupos, cargos, planificadores y más.
+    
+    La autenticación es mediante JWT (JSON Web Token). Para obtenerlo, usar el endpoint /Login
+    con las credenciales de API (ConsumerKey y ConsumerSecret) obtenidas desde la plataforma
+    en Configuraciones > Acceso API.
+    
+    Luego incluir el token en todas las peticiones:
+    `Authorization: Bearer <token>`
+  version: "1.0"
+  contact:
+    email: ventas@geovictoria.com
+    url: https://wiki.geovictoria.com/knowledge-base/category/api/
+
+servers:
+  - url: https://customerapi.geovictoria.com/api/v1
+    description: Entorno Productivo
+  - url: https://customerapi-sandbox.geovictoria.com/api/v1
+    description: Entorno Sandbox (pruebas y desarrollo)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    # ──────────────────────────────────────────
+    # Schemas reutilizables de Punch (Marca)
+    # ──────────────────────────────────────────
+    PunchItem:
+      type: object
+      properties:
+        Type:
+          type: string
+          description: Tipo de marca (Ingreso / Salida)
+        Date:
+          type: string
+          description: Fecha y hora de la marca (yyyyMMddHHmmss)
+        Origin:
+          type: string
+          description: Origen de la marca (reloj, app, web, etc.)
+        Longitude:
+          type: string
+          description: Longitud GPS. Solo si tiene geolocalización
+        Latitude:
+          type: string
+          description: Latitud GPS. Solo si tiene geolocalización
+        Accuracy:
+          type: string
+          description: Margen de error del GPS. Solo si tiene geolocalización
+        GroupDescription:
+          type: string
+          description: Descripción del grupo asociado
+        JustifiedTimeJustification:
+          type: string
+          description: Justificación del tiempo. Solo si está justificada
+        UploadDate:
+          type: string
+          description: Fecha de subida (yyyyMMddHHmmss)
+        ShiftPunchType:
+          type: string
+          description: Tipo de marca dentro del turno (Entrada / Salida / SalidaColacion / etc.)
+        UserIdentifier:
+          type: string
+          description: Identificador del usuario dueño de la marca
+        AssignedInBook:
+          type: boolean
+          description: Indica si la marca está asignada en el libro de asistencia
+        CallerId:
+          type: string
+          description: Identificador telefónico (ANI), si aplica
+        BoxSn:
+          type: string
+          description: Número de serie del reloj
+        IdTask:
+          type: string
+          description: Identificador de la tarea, si aplica
+        IdProject:
+          type: string
+          description: Identificador del proyecto, si aplica
+        PunchId:
+          type: string
+          description: Identificador único de la marca
+        Checksum:
+          type: string
+          description: Checksum de validación
+
+    ShiftItem:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Identificador único del turno
+        StartTime:
+          type: string
+          description: Hora de inicio (HH:MM)
+        MaxStartTime:
+          type: string
+          description: Hora máxima de inicio para Banda Horaria (HH:MM)
+        ExitTime:
+          type: string
+          description: Hora de salida para Turno Fijo (HH:MM)
+        Type:
+          type: string
+          enum: [FixedShift, FixedHours, NotWorking, FreeShift, NoShift, InPerson]
+          description: Tipo de turno
+        FixedShiftHours:
+          type: string
+          description: Horas fijas del turno (HH:MM)
+        ShiftDisplay:
+          type: string
+          description: Nombre/representación visible del turno
+        BreakType:
+          type: string
+          enum: [NoLunch, FreeLunch, FixedLunch]
+          description: Tipo de colación
+        BreakMinutes:
+          type: string
+          description: Minutos de colación (solo Colación Libre)
+        BreakStart:
+          type: string
+          description: Hora de inicio de colación (solo Colación Fija, HH:MM)
+        BreakEnd:
+          type: string
+          description: Hora de fin de colación (solo Colación Fija, HH:MM)
+        Status:
+          type: string
+          enum: [enabled, disabled]
+          description: Estado del turno
+        Custom:
+          type: string
+          description: Campo personalizado del turno
+
+    TimeOffItem:
+      type: object
+      properties:
+        TimeOffTypeId:
+          type: string
+          description: Identificador único encriptado del tipo de permiso
+        Starts:
+          type: string
+          description: Fecha y hora de inicio (yyyyMMddHHmmss)
+        Ends:
+          type: string
+          description: Fecha y hora de fin (yyyyMMddHHmmss)
+        TimeOffTypeDescription:
+          type: string
+          description: Nombre/Descripción del tipo de permiso
+        Description:
+          type: string
+          description: Comentario del permiso
+        TimeOffOrigin:
+          type: string
+          description: Origen desde donde fue asignado
+        UserIdentifier:
+          type: string
+          description: Identificador del usuario
+        StartTime:
+          type: string
+          description: Hora de inicio del permiso parcial (hh:mm:ss)
+        EndTime:
+          type: string
+          description: Hora de fin del permiso parcial (hh:mm:ss)
+        AmountHours:
+          type: string
+          description: Cantidad de horas del permiso parcial (hh:mm)
+        HolidayPeriod:
+          type: string
+          description: Periodo del saldo de vacaciones
+        HolidayTypeCode:
+          type: string
+          description: Código del tipo de goce
+        ExternalId:
+          type: string
+          description: Identificador externo
+        Assignment:
+          type: string
+          description: Asignación respecto al turno (ShiftStart / ShiftEnd)
+
+    OperationResult:
+      type: object
+      properties:
+        Success:
+          type: boolean
+        Response:
+          type: boolean
+
+security:
+  - BearerAuth: []
+
+paths:
+
+  # ══════════════════════════════════════════════
+  # AUTH
+  # ══════════════════════════════════════════════
+  /Login:
+    post:
+      tags: [Autenticación]
+      summary: Autenticarse y obtener token JWT
+      description: |
+        Permite autenticarse con las credenciales de API y obtener el token JWT
+        para usar en el resto de endpoints. No requiere autenticación previa.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [User, Password]
+              properties:
+                User:
+                  type: string
+                  description: Clave API (ConsumerKey) obtenida de plataforma > Configuraciones > Acceso API
+                  example: aa1bb2
+                Password:
+                  type: string
+                  description: Secreto (ConsumerSecret) obtenido de plataforma > Configuraciones > Acceso API
+                  example: cc33dd44
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JSON Web Token (JWT) generado
+                    example: ee5ff6gg7hh8ii9jj10kk...
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  # ══════════════════════════════════════════════
+  # CONSOLIDATED
+  # ══════════════════════════════════════════════
+  /Consolidated:
+    post:
+      tags: [Consolidated]
+      summary: Obtener consolidado del libro de asistencia
+      description: |
+        Obtiene el consolidado del libro de asistencia con horas trabajadas, no trabajadas,
+        horas extra e inasistencias para un periodo y conjunto de usuarios.
+        Entrega un objeto por usuario con los totales del periodo.
+        Los montos de horas se devuelven en formato HH:MM.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [StartDate, EndDate, UserIds]
+              properties:
+                StartDate:
+                  type: string
+                  description: Fecha inicial. Formato yyyyMMddHHmmss
+                  example: "20240501000000"
+                EndDate:
+                  type: string
+                  description: Fecha final. Formato yyyyMMddHHmmss
+                  example: "20240531235959"
+                UserIds:
+                  type: string
+                  description: Lista de identificadores de usuario separados por coma
+                  example: "15715287,76831428"
+                IncludeAll:
+                  type: integer
+                  description: "0: solo usuarios habilitados. 1: todos los usuarios"
+                  enum: [0, 1]
+                  example: 0
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Identifier:
+                      type: string
+                      description: Identificador único del usuario
+                    WorkedHours:
+                      type: string
+                      description: Total horas trabajadas en el periodo (HH:MM)
+                    NonWorkedHours:
+                      type: string
+                      description: Total horas no trabajadas (HH:MM)
+                    TotalAuthorizedExtraTime:
+                      type: string
+                      description: Total horas extra efectivamente cumplidas (HH:MM)
+                    TotalAuthorizedOvertime:
+                      type: string
+                      description: Total horas extra asignadas/autorizadas (HH:MM)
+                    Absent:
+                      type: integer
+                      description: Cantidad de inasistencias
+                    AccomplishedExtraTime:
+                      type: object
+                      description: Detalle de horas extra cumplidas por tipo (clave=id tipo, valor=HH:MM)
+                      additionalProperties:
+                        type: string
+        '400':
+          description: Error en el request
+
+  /Consolidated/Extended:
+    post:
+      tags: [Consolidated]
+      summary: Obtener consolidado extendido del libro de asistencia
+      description: |
+        Extiende el consolidado básico con detalle de días pagados/no pagados, totales de días
+        y horas trabajadas en domingos y feriados. Entrega un objeto por usuario con totales del periodo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [StartDate, EndDate, UserIds]
+              properties:
+                StartDate:
+                  type: string
+                  description: Fecha inicial. Formato yyyyMMddHHmmss
+                  example: "20240501000000"
+                EndDate:
+                  type: string
+                  description: Fecha final. Formato yyyyMMddHHmmss
+                  example: "20240531235959"
+                UserIds:
+                  type: string
+                  description: Lista de identificadores de usuario separados por coma
+                  example: "15715287,76831428"
+                IncludeAll:
+                  type: integer
+                  description: "0: solo habilitados. 1: todos"
+                  enum: [0, 1]
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Identifier:
+                      type: string
+                    WorkedHours:
+                      type: string
+                    NonWorkedHours:
+                      type: string
+                    TotalAuthorizedExtraTime:
+                      type: string
+                    TotalAuthorizedOvertime:
+                      type: string
+                    Absent:
+                      type: integer
+                    AccomplishedExtraTime:
+                      type: object
+                      additionalProperties:
+                        type: string
+                    TotalAccomplishedExtraTime:
+                      type: string
+                    WorkedSundays:
+                      type: integer
+                    WorkedSundaysHours:
+                      type: string
+                    ActuallyWorkedSundaysHours:
+                      type: string
+                    WorkedHolidays:
+                      type: integer
+                    WorkedHolidaysHours:
+                      type: string
+                    ActuallyWorkedHolidaysHours:
+                      type: string
+                    Totals:
+                      type: object
+                      properties:
+                        PaidDays:
+                          type: integer
+                        NonPaidDays:
+                          type: integer
+                    PaidDays:
+                      type: object
+                      properties:
+                        RestDays:
+                          type: integer
+                        WorkedDays:
+                          type: integer
+                        Holidays:
+                          type: integer
+                        Vacations:
+                          type: integer
+                        PaidTimeOffDays:
+                          type: integer
+                    NonPaidDays:
+                      type: object
+                      properties:
+                        UnjustifiedAbsenseDays:
+                          type: integer
+                        Leaves:
+                          type: integer
+                        NonPaidTimeOffDays:
+                          type: integer
+                        NonWorkedHolidays:
+                          type: integer
+        '400':
+          description: Error en el request
+
+  # ══════════════════════════════════════════════
+  # CONFIGURATIONS
+  # ══════════════════════════════════════════════
+  /Configurations/WorkingHoursCode/List:
+    post:
+      tags: [Configurations]
+      summary: Listar códigos de jornada de trabajo
+      description: |
+        Obtiene el listado de códigos de jornada configurados para la empresa.
+        No requiere cuerpo de solicitud; la empresa se determina por el token.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Success:
+                    type: boolean
+                  Message:
+                    type: string
+                  Response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        CodeWorkDayId:
+                          type: string
+                          description: Identificador único del código de jornada
+                        Description:
+                          type: string
+                          description: Nombre o descripción del código de jornada
+                        IsAccountOvertime:
+                          type: string
+                          description: Indica si contabiliza horas extra (True/False)
+                        Hours:
+                          type: string
+                          description: Horas semanales (HH:MM)
+                        RestrictionHoursType:
+                          type: string
+                          description: Tipo de restricción de horas (valor numérico)
+        '400':
+          description: Error en el request
+
+  # ══════════════════════════════════════════════
+  # COMPANY
+  # ══════════════════════════════════════════════
+  /Company/TradeNameList:
+    post:
+      tags: [Company]
+      summary: Listar razones sociales
+      description: Obtiene una lista de las razones sociales existentes de la empresa.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Success:
+                    type: boolean
+                  Response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        Id:
+                          type: string
+                          description: Identificador cifrado de la razón social
+                        Name:
+                          type: string
+                          description: Nombre de la razón social
+                        Address:
+                          type: string
+                          description: Dirección
+                        State:
+                          type: string
+                          description: Estado de activación (enabled/disabled)
+                        EntryDate:
+                          type: string
+                          description: Fecha de creación (yyyyMMddHHmmss)
+                        ExternalIdentifier:
+                          type: string
+                          description: Identificador externo
+                        IsTradeNameBase:
+                          type: string
+                          description: Nombre base de identificación
+                        CompanyActivity:
+                          type: string
+                          description: Rubro de la razón social
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  # ══════════════════════════════════════════════
+  # ATTENDANCE BOOK
+  # ══════════════════════════════════════════════
+  /AttendanceBook:
+    post:
+      tags: [AttendanceBook]
+      summary: Obtener libro de asistencia
+      description: |
+        Obtiene el libro de asistencia con horas trabajadas, no trabajadas, horas extra,
+        atrasos, marcas, turnos y permisos. Entrega un objeto por usuario con detalle diario
+        agrupado en semanas. Utilizar para empresas que trabajan con valores diarios.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [StartDate, EndDate, UserIds]
+              properties:
+                StartDate:
+                  type: string
+                  description: Fecha inicial. Formato yyyyMMddHHmmss
+                  example: "20240501000000"
+                EndDate:
+                  type: string
+                  description: Fecha final. Formato yyyyMMddHHmmss
+                  example: "20240531235959"
+                UserIds:
+                  type: string
+                  description: Lista de identificadores de usuario separados por coma
+                  example: "15715287,76831428"
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Users:
+                    type: array
+                    description: Lista de usuarios con sus valores calculados
+                    items:
+                      type: object
+                      properties:
+                        Id:
+                          type: string
+                        Identifier:
+                          type: string
+                        Enabled:
+                          type: string
+                        Name:
+                          type: string
+                        LastName:
+                          type: string
+                        Email:
+                          type: string
+                        PersonalEmail:
+                          type: string
+                        GroupDescription:
+                          type: string
+                        CostCenterCode:
+                          type: string
+                        PositionId:
+                          type: string
+                        PositionDescription:
+                          type: string
+                        WeeklyWorkingHoursCodeId:
+                          type: string
+                        WeeklyWorkingHoursCodeDescription:
+                          type: string
+                        CustomColumn1:
+                          type: string
+                        CustomColumn2:
+                          type: string
+                        CustomColumn3:
+                          type: string
+                        IsHiddenForReports:
+                          type: string
+                        ContractDate:
+                          type: string
+                        EndContractDate:
+                          type: string
+                        SchedulerId:
+                          type: string
+                        SchedulerStart:
+                          type: string
+                        SchedulerPeriodStart:
+                          type: string
+                        IntegrationCode:
+                          type: string
+                        UserCompanyIdentifier:
+                          type: string
+                        Birthdate:
+                          type: string
+                        Age:
+                          type: string
+                        Gender:
+                          type: string
+                        TotalWorkedHours:
+                          type: string
+                        TotalNonWorkedHours:
+                          type: string
+                        TotalAccomplishedOvertime:
+                          type: string
+                        TotalPlannedTime:
+                          type: string
+                        WorkedDays:
+                          type: integer
+                        NonWorkedDays:
+                          type: integer
+                        Absences:
+                          type: integer
+                        DaysAttended:
+                          type: integer
+                        Holidays:
+                          type: integer
+                        Vacation:
+                          type: integer
+                        DaysLeaveWithPay:
+                          type: integer
+                        DaysLeaveWithoutPay:
+                          type: integer
+                        AbsenceDaysWithoutJustification:
+                          type: integer
+                        AbsenceDaysLicense:
+                          type: integer
+                        WorkedSundays:
+                          type: integer
+                        WorkedHolidays:
+                          type: integer
+                        TotalSundayWorkedHours:
+                          type: string
+                        TotalSundayActualWorkedHours:
+                          type: string
+                        TotalHolidayWorkedHours:
+                          type: string
+                        TotalHolidayActualWorkedHours:
+                          type: string
+                        TotalDiurnalWorkedHours:
+                          type: string
+                        TotalNocturnalWorkedHours:
+                          type: string
+                        TotalNocturnalActuallyWorkedHours:
+                          type: string
+                        TotalWorkedHoursOnRest:
+                          type: string
+                        OvertimeAssigned:
+                          type: string
+                        TotalOvertimeHoursAccomplished:
+                          type: string
+                        TotalOvertimeAssignment:
+                          type: string
+                        OvertimeAuthorizedBefore:
+                          type: string
+                        OvertimeAuthorizedAfter:
+                          type: string
+                        TotalHoursProfit:
+                          type: string
+                        TotalOvertime:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        TotalOvertimeDiurnal:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        TotalOvertimeNocturnal:
+                          type: object
+                          additionalProperties:
+                            type: string
+                        TotalsDaysCounted:
+                          type: object
+                          properties:
+                            DayWithPay:
+                              type: integer
+                            DayWithoutPay:
+                              type: integer
+                            AttendedDay:
+                              type: integer
+                            RestDay:
+                              type: integer
+                            ShouldNotWorkHoliday:
+                              type: integer
+                            TimeOffWithPay:
+                              type: integer
+                            Absences:
+                              type: integer
+                            TimeOffWithoutPay:
+                              type: integer
+                            ShouldWorkHoliday:
+                              type: integer
+                            AttendedHoliday:
+                              type: integer
+                            AttendedSunday:
+                              type: integer
+                            Vacations:
+                              type: integer
+                            MedicalLicense:
+                              type: integer
+                        AbsentDays:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              Date:
+                                type: string
+                              Absent:
+                                type: string
+                              HasDelay:
+                                type: string
+                              Delay:
+                                type: string
+                        PlannedInterval:
+                          type: array
+                          description: Intervalos planificados (mismo formato que Weeks > Intervals)
+                          items:
+                            $ref: '#/components/schemas/IntervalItem'
+                        Weeks:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/WeekItem'
+                  ExtraTimeValues:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ValueId:
+                          type: string
+                        Value:
+                          type: string
+                        IsActive:
+                          type: string
+        '400':
+          description: Error en el request
+
+  /AttendanceBook/GetConsolidatedColombia:
+    post:
+      tags: [AttendanceBook]
+      summary: Consolidado Colombia (horas extra y recargos)
+      description: |
+        Obtiene el consolidado del libro de asistencia Colombia con horas extra, recargos y días especiales.
+        Solo aplica a empresas configuradas como Colombia. Los montos se devuelven en HH:MM.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [StartDate, EndDate, UserIds]
+              properties:
+                StartDate:
+                  type: string
+                  description: Fecha inicial. Formato yyyyMMddHHmmss
+                  example: "20240501000000"
+                EndDate:
+                  type: string
+                  description: Fecha final. Formato yyyyMMddHHmmss
+                  example: "20240531235959"
+                UserIds:
+                  type: string
+                  description: Lista de identificadores de usuario separados por coma
+                  example: "1231231235,76831428"
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Identifier:
+                      type: string
+                    Absences:
+                      type: integer
+                    TotalOvertime:
+                      type: string
+                    OrdinaryDiurnalOvertime:
+                      type: string
+                    OrdinaryNocturnalOvertime:
+                      type: string
+                    SundayDiurnalOvertime:
+                      type: string
+                    SundayNocturnalOvertime:
+                      type: string
+                    HolidayDiurnalOvertime:
+                      type: string
+                    HolidayNocturnalOvertime:
+                      type: string
+                    OrdinaryNocturnalSurcharge:
+                      type: string
+                    SundayDiurnalSurcharge:
+                      type: string
+                    SundayNocturnalSurcharge:
+                      type: string
+                    HolidayDiurnalSurcharge:
+                      type: string
+                    HolidayNocturnalSurcharge:
+                      type: string
+                    CompensatedSundayDiurnalSurcharge:
+                      type: string
+                    CompensatedSundayNocturnalSurcharge:
+                      type: string
+                    CompensatedHolidayDiurnalSurcharge:
+                      type: string
+                    CompensatedHolidayNocturnalSurcharge:
+                      type: string
+                    TotalSurcharge:
+                      type: string
+                    SpecialDays:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Date:
+                            type: string
+                          Absent:
+                            type: string
+                          HasDelay:
+                            type: string
+                          Delay:
+                            type: string
+        '400':
+          description: Error en el request
+
+  /AttendanceBook/PunchesByShifts:
+    post:
+      tags: [AttendanceBook]
+      summary: Marcas agrupadas por turno
+      description: |
+        Obtiene las marcas agrupadas por turno para un periodo y conjunto de usuarios.
+        Solo incluye días con turno asignado. Las horas se devuelven en HH:MM.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [StartDate, EndDate, UserIds]
+              properties:
+                StartDate:
+                  type: string
+                  description: Fecha inicial. Formato yyyyMMddHHmmss
+                  example: "20260501000000"
+                EndDate:
+                  type: string
+                  description: Fecha final. Formato yyyyMMddHHmmss
+                  example: "20260531235959"
+                UserIds:
+                  type: string
+                  description: Lista de identificadores de usuario separados por coma
+                  example: "65631998"
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Id:
+                      type: string
+                    Identifier:
+                      type: string
+                    Enabled:
+                      type: string
+                    Name:
+                      type: string
+                    LastName:
+                      type: string
+                    Email:
+                      type: string
+                    GroupDescription:
+                      type: string
+                    PositionId:
+                      type: string
+                    PositionDescription:
+                      type: string
+                    WeeklyWorkingHoursCodeId:
+                      type: string
+                    CustomColumn1:
+                      type: string
+                    CustomColumn2:
+                      type: string
+                    CustomColumn3:
+                      type: string
+                    IsHiddenForReports:
+                      type: string
+                    Shifts:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Id:
+                            type: string
+                          Date:
+                            type: string
+                          BelongsToDay:
+                            type: string
+                          StartTime:
+                            type: string
+                          MaxStartTime:
+                            type: string
+                          ExitTime:
+                            type: string
+                          Type:
+                            type: string
+                          FixedShiftHours:
+                            type: string
+                          ShiftDisplay:
+                            type: string
+                          BreakType:
+                            type: string
+                          BreakMinutes:
+                            type: string
+                          BreakStart:
+                            type: string
+                          BreakEnd:
+                            type: string
+                          Status:
+                            type: string
+                          Custom:
+                            type: string
+                          Punches:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/PunchItem'
+        '400':
+          description: Error en el request
+
+  # ══════════════════════════════════════════════
+  # USER
+  # ══════════════════════════════════════════════
+  /User/ListComplete:
+    post:
+      tags: [User]
+      summary: Listar usuarios completos
+      description: Obtiene una lista de usuarios registrados con campos adicionales. No requiere body.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Success:
+                    type: boolean
+                  Response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        UserProfile:
+                          type: string
+                        TradeName:
+                          type: string
+                        LegalSundayIndicator:
+                          type: string
+                          description: "0 = No, 1 = Sí"
+                        ProfileId:
+                          type: string
+                        Id:
+                          type: string
+                        Identifier:
+                          type: string
+                        Enabled:
+                          type: string
+                          description: "1 = activo, 0 = desactivado"
+                        Name:
+                          type: string
+                        LastName:
+                          type: string
+                        Email:
+                          type: string
+                        GroupDescription:
+                          type: string
+                        CostCenterCode:
+                          type: string
+                        PositionId:
+                          type: string
+                        WeeklyWorkingHoursCodeId:
+                          type: string
+                        IsHiddenForReports:
+                          type: string
+                        ContractDate:
+                          type: string
+                        EndContractDate:
+                          type: string
+                        SchedulerStart:
+                          type: string
+                        SchedulerPeriodStart:
+                          type: string
+                        UserCompanyIdentifier:
+                          type: string
+                        Birthdate:
+                          type: string
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  # ══════════════════════════════════════════════
+  # TIME OFF (PERMISOS)
+  # ══════════════════════════════════════════════
+  /TimeOff/AddType:
+    post:
+      tags: [TimeOff]
+      summary: Crear tipo de permiso
+      description: |
+        Crea un nuevo tipo de permiso. No hay límite para crear tipos con las mismas características.
+        Solo usar IsByHours cuando IsParcial=true. Solo usar LengthInHours cuando IsByHours=false.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [Description, IsPayable]
+              properties:
+                Description:
+                  type: string
+                  maxLength: 30
+                  description: Descripción del tipo de permiso
+                IsPayable:
+                  type: boolean
+                  description: Indica si es remunerado
+                IsParcial:
+                  type: boolean
+                  description: Indica si es parcial
+                IsByHours:
+                  type: boolean
+                  description: true=fijo por hora, false=cantidad de horas (solo si IsParcial=true)
+                LengthInHours:
+                  type: string
+                  description: Número de horas en formato HH:mm (solo si IsByHours=false)
+                TypeOfPartialTimeOff:
+                  type: string
+                  description: Usar "HalfDay" para permiso de media jornada
+      responses:
+        '200':
+          description: Éxito - Retorna el ID encriptado del tipo de permiso creado
+          content:
+            application/json:
+              schema:
+                type: string
+                description: ID encriptado del tipo de permiso
+                example: X4g_hFTy9JMAQW123zVpkQ
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  /TimeOff/Upsert:
+    post:
+      tags: [TimeOff]
+      summary: Asignar permiso a usuario
+      description: |
+        Asigna un permiso a un usuario en una fecha específica. El campo TypeOffAssigment
+        es solo para permisos parciales de media jornada.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [UserIdentifier, TimeOffTypeId, StartDate, EndDate]
+              properties:
+                UserIdentifier:
+                  type: string
+                  maxLength: 16
+                  description: Identificador único del usuario
+                TimeOffTypeId:
+                  type: string
+                  maxLength: 30
+                  description: Identificador encriptado del tipo de permiso
+                StartDate:
+                  type: string
+                  maxLength: 14
+                  description: Fecha y hora de inicio en formato yyyyMMddHHmmss
+                EndDate:
+                  type: string
+                  maxLength: 14
+                  description: Fecha y hora de fin en formato yyyyMMddHHmmss
+                StartTime:
+                  type: string
+                  maxLength: 5
+                  description: Hora de inicio del permiso parcial fijo por horas (HH:mm)
+                EndTime:
+                  type: string
+                  maxLength: 5
+                  description: Hora de fin del permiso parcial fijo por horas (HH:mm)
+                Hours:
+                  type: string
+                  maxLength: 5
+                  description: Cantidad de horas del permiso parcial (HH:mm)
+                Description:
+                  type: string
+                  maxLength: 300
+                  description: Descripción del permiso asignado
+                TypeOffAssigment:
+                  type: string
+                  maxLength: 300
+                  description: Para media jornada. Valores posibles:"start" o "end"
+                  enum: [start, end]
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: boolean
+                description: true si la asignación fue exitosa
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  /TimeOff/Delete:
+    post:
+      tags: [TimeOff]
+      summary: Eliminar permiso asignado a usuario
+      description: Elimina la asignación de un permiso dada su fecha de inicio y fin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [TypeIdentifier, Start, End, UserIdentifier]
+              properties:
+                TypeIdentifier:
+                  type: string
+                  maxLength: 14
+                  description: Identificador encriptado del permiso (TimeOffTypeId de TimeOff/Get)
+                Start:
+                  type: string
+                  maxLength: 14
+                  description: Fecha y hora de inicio en formato yyyyMMddHHmmss
+                End:
+                  type: string
+                  maxLength: 14
+                  description: Fecha y hora de fin en formato yyyyMMddHHmmss
+                UserIdentifier:
+                  type: string
+                  maxLength: 20
+                  description: Identificador del usuario
+      responses:
+        '200':
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          description: Error en el request
+        '500':
+          description: Error no controlado, contactar a GV
+
+  /TimeOff/Get:
+    post:
+      tags: [TimeOff]
+      summary: Obtener permisos asignados en un periodo
+      description: Retorna una lista de permisos asignados a usuarios para un periodo específico.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
