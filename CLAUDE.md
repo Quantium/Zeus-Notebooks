@@ -55,10 +55,14 @@ API is again the single source for entradas.
 
 ## `lisa_client.py` (the only hand-written module)
 
-Single-endpoint REST client by design. Constraints encoded in the file:
-- **Only the SGA `entradas_almacen` endpoint belongs here.** Legacy wrappers (pedidos,
-  albaranes, etc.) are meant to live in `lisa_old_client.py` (referenced but not yet present)
-  — do not add non-SGA endpoints to `lisa_client.py`.
+SGA-only REST client mirroring `swagger.json` (the final EDISA contract, 9 SGA endpoints).
+Constraints encoded in the file:
+- **Only SGA-module endpoints belong here.** `entradas_almacen` (sga_entradas) is the
+  canonical one for the repo's analyses (`fecha_gen` required); the client also wraps
+  `colocacion(_2)`, `preparacion(_2)`, `embalaje` and `actividad_maquina(_2/_historico)`,
+  all with optional filters. Note: `preparacion_2` filters by `p_fecha_tarea`, not
+  `p_fecha_gen`. Legacy non-SGA wrappers (pedidos, albaranes, etc.) are meant to live in
+  `lisa_old_client.py` (referenced but not yet present) — do not add them to `lisa_client.py`.
 - "Bring all records" is `l$regs=-1`, **not** `l$pag=-1` — confusing them silently drops to a
   default page size.
 - `_post()` is the shared transport; `session` is injectable for mocking. Errors raise

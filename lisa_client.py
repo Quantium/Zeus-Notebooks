@@ -4,12 +4,14 @@ lisa_client.py
 Cliente Python para la API de Integración LISA (Libra Fármacos / Plataforma Galileo).
 
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  ÚNICO ENDPOINT: entradas_almacen (SGA)                                  ║
+║  ENDPOINTS DEL MÓDULO SGA — contrato: swagger.json (EDISA)               ║
 ║                                                                          ║
-║  Este archivo expone el único endpoint canónico. Los wrappers heredados  ║
-║  (pedidos, albaranes, licitaciones, catálogos) viven en                  ║
-║  `lisa_old_client.py` durante el periodo de deprecación.                 ║
+║  entradas_almacen · colocacion · colocacion_2 · preparacion              ║
+║  preparacion_2 · embalaje · actividad_maquina · actividad_maquina_2      ║
+║  actividad_maquina_historico                                             ║
 ║                                                                          ║
+║  Los wrappers heredados (pedidos, albaranes, licitaciones, catálogos)    ║
+║  viven en `lisa_old_client.py` durante el periodo de deprecación.        ║
 ║  NO agregues aquí endpoints que no sean del módulo SGA.                  ║
 ║                                                                          ║
 ║  Uso:  client.entradas_almacen(fecha_gen="01/06/2026", almacen="5460D")  ║
@@ -162,6 +164,7 @@ class LisaClient:
         self,
         fecha_gen: str,
         almacen: str = "",
+        empresa: str = "",
         pag: int | None = None,
         regs: int | None = -1,
     ) -> dict:
@@ -171,6 +174,7 @@ class LisaClient:
         Parámetros:
             fecha_gen: obligatorio, formato dd/mm/aaaa.
             almacen:   código de almacén (ej. "5460D"). Vacío = todos.
+            empresa:   código de empresa Libra. Vacío = todas.
             pag:       número de página. None = sin paginar.
             regs:      registros por página. -1 (default) = todos.
 
@@ -184,6 +188,159 @@ class LisaClient:
             {
                 "p_fecha_gen": fecha_gen,
                 "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    # ════════════════════════════════════════════════════════════════════════
+    # Resto de endpoints SGA (contrato swagger.json)
+    # Todos los filtros son opcionales; vacío = sin filtrar. Fechas dd/mm/aaaa.
+    # ════════════════════════════════════════════════════════════════════════
+    def colocacion(
+        self,
+        fecha_gen: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Tareas de colocación (ubicación de mercancía recibida) del SGA."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_colocacion",
+            {
+                "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def colocacion_2(
+        self,
+        fecha_gen: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Colocación con descripciones (campos d_*: máquina, zona, artículo…)."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_colocacion_2",
+            {
+                "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def preparacion(
+        self,
+        fecha_gen: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Tareas de preparación/surtido (picking) con detalle de líneas de pedido."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_preparacion",
+            {
+                "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def preparacion_2(
+        self,
+        fecha_tarea: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """
+        Resumen de preparación por usuario/máquina (tareas, líneas, cantidades,
+        tiempo_segundos). OJO: el filtro de fecha es `p_fecha_tarea`,
+        no `p_fecha_gen`.
+        """
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_preparacion_2",
+            {
+                "p_fecha_tarea": fecha_tarea,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def embalaje(
+        self,
+        fecha_gen: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Tareas de embalaje (empaquetado en box para embarque) del SGA."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_embalaje",
+            {
+                "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def actividad_maquina(
+        self,
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Actividad actual por máquina (tareas en curso). Sin filtros."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_act_maq",
+            {},
+            pag=pag,
+            regs=regs,
+        )
+
+    def actividad_maquina_2(
+        self,
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Actividad por usuario con pedido/cliente/artículo y tiempo. Sin filtros."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_act_maq_2",
+            {},
+            pag=pag,
+            regs=regs,
+        )
+
+    def actividad_maquina_historico(
+        self,
+        fecha: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """Histórico de acciones sobre tareas (endpoint sga_act_maq_3)."""
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_act_maq_3",
+            {
+                "p_fecha": fecha,
+                "p_empresa": empresa,
             },
             pag=pag,
             regs=regs,
