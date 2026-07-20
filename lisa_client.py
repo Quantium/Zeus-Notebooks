@@ -6,15 +6,21 @@ Cliente Python para la API de Integración LISA (Libra Fármacos / Plataforma Ga
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║  ENDPOINTS DEL MÓDULO SGA — contrato: swagger.json (EDISA)               ║
 ║                                                                          ║
-║  entradas_almacen · colocacion · colocacion_2 · preparacion              ║
-║  preparacion_2 · embalaje · actividad_maquina · actividad_maquina_2      ║
-║  actividad_maquina_historico                                             ║
+║  entradas_almacen · entradas_almacen_2 · colocacion · colocacion_2      ║
+║  preparacion · preparacion_2 · embalaje · actividad_maquina             ║
+║  actividad_maquina_2 · actividad_maquina_historico                      ║
 ║                                                                          ║
 ║  Los wrappers heredados (pedidos, albaranes, licitaciones, catálogos)    ║
 ║  viven en `lisa_old_client.py` durante el periodo de deprecación.        ║
 ║  NO agregues aquí endpoints que no sean del módulo SGA.                  ║
 ║                                                                          ║
-║  Uso:  client.entradas_almacen(fecha_gen="01/06/2026", almacen="5460D")  ║
+║  Fechas de PETICIÓN en ISO `AAAA-MM-DD` (jul-2026: la máscara Oracle     ║
+║  cambió; `dd/mm/aaaa` da ORA-01830 y `dd/mm/aa` se malinterpreta como    ║
+║  año 1 en silencio). Las fechas de RESPUESTA quedaron mixtas:            ║
+║  entradas/entradas_2/colocacion_2 en dd/mm/aaaa; preparacion(_2)/        ║
+║  embalaje en ISO 8601.                                                   ║
+║                                                                          ║
+║  Uso:  client.entradas_almacen(fecha_gen="2026-06-01", almacen="5460D")  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -170,9 +176,10 @@ class LisaClient:
     ) -> dict:
         """
         Recepciones de mercancía (entradas) registradas en el SGA.
+        Nivel tarea; NO expone cantidades — para piezas usa entradas_almacen_2.
 
         Parámetros:
-            fecha_gen: obligatorio, formato dd/mm/aaaa.
+            fecha_gen: obligatorio, formato ISO AAAA-MM-DD (cota inferior).
             almacen:   código de almacén (ej. "5460D"). Vacío = todos.
             empresa:   código de empresa Libra. Vacío = todas.
             pag:       número de página. None = sin paginar.
@@ -182,7 +189,7 @@ class LisaClient:
         NO `l$pag=-1` — confundirlos hace que el servidor caiga al default.
         """
         if not fecha_gen:
-            raise ValueError("fecha_gen es obligatorio (formato dd/mm/aaaa)")
+            raise ValueError("fecha_gen es obligatorio (formato ISO AAAA-MM-DD)")
         return self._post(
             "/galileo/lisa/geninf/isp/sga_entradas",
             {
@@ -194,9 +201,39 @@ class LisaClient:
             regs=regs,
         )
 
+    def entradas_almacen_2(
+        self,
+        fecha_gen: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """
+        Entradas con detalle de LÍNEA: artículo, lote, palet y
+        `cantidad_presentacion` (piezas) — el único endpoint de entradas
+        que expone cantidades. Incluye descripciones (d_*) y `numero_tarea`
+        para ligar con entradas_almacen.
+
+        OJO (verificado jul-2026): el servidor IGNORA el filtro de fecha en
+        este endpoint (devuelve toda la historia); se acepta el parámetro por
+        simetría/futuro. `p_almacen` sí filtra.
+        """
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_entradas_2",
+            {
+                "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
     # ════════════════════════════════════════════════════════════════════════
     # Resto de endpoints SGA (contrato swagger.json)
-    # Todos los filtros son opcionales; vacío = sin filtrar. Fechas dd/mm/aaaa.
+    # Todos los filtros son opcionales; vacío = sin filtrar.
+    # Fechas ISO AAAA-MM-DD.
     # ════════════════════════════════════════════════════════════════════════
     def colocacion(
         self,
@@ -246,7 +283,11 @@ class LisaClient:
         pag: int | None = None,
         regs: int | None = -1,
     ) -> dict:
-        """Tareas de preparación/surtido (picking) con detalle de líneas de pedido."""
+        """
+        Tareas de preparación/surtido (picking) con detalle de líneas de pedido.
+        Desde jul-2026 incluye piezas por línea: `cantidad_unidad1_ped`,
+        `cantidad_unidad1_res` y `cantidad_facturada`.
+        """
         return self._post(
             "/galileo/lisa/geninf/isp/sga_preparacion",
             {
@@ -351,10 +392,10 @@ class LisaClient:
 def main() -> None:
     """Corre el endpoint canónico contra el servidor con un ejemplo."""
     client = LisaClient()
-    etiqueta = "★ Entradas SGA | fecha_gen=01/06/2026, almacen=5460D"
+    etiqueta = "★ Entradas SGA | fecha_gen=2026-06-01, almacen=5460D"
     try:
         Presenter.resumen(
-            client.entradas_almacen(fecha_gen="01/06/2026", almacen="5460D"),
+            client.entradas_almacen(fecha_gen="2026-06-01", almacen="5460D"),
             etiqueta,
         )
     except LisaAPIError as e:
