@@ -348,6 +348,118 @@
         }
       }
     },
+    "/galileo/lisa/geninf/isp/sga_calendario": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGACALENDARIO"
+        ],
+        "description": "información calendario entregas",
+        "operationId": "POST_ISP/SGA_CALENDARIO",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro de Empresa de LIBRA",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro de almacen",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Calendario_Response",
+              "xml": {
+                "name": "isp-sga_calendario_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
     "/galileo/lisa/geninf/isp/sga_colocacion": {
       "post": {
         "tags": [
@@ -586,6 +698,244 @@
         }
       }
     },
+    "/galileo/lisa/geninf/isp/sga_embalaje": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGAEMBALAJE"
+        ],
+        "description": "SGA EMBALAJE",
+        "operationId": "POST_ISP/SGA_EMBALAJE",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_fecha_gen",
+            "in": "formData",
+            "description": "Filtro fecha generacion tarea",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro empresa Libra",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro almacen Libra",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Embalaje_Response",
+              "xml": {
+                "name": "isp-sga_embalaje_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/galileo/lisa/geninf/isp/sga_embalaje_2": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGAEMBALAJE2"
+        ],
+        "description": "SGA Embalaje con detalle de claves",
+        "operationId": "POST_ISP/SGA_EMBALAJE_2",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro empresa Libra",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro almacén",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_fecha_tarea",
+            "in": "formData",
+            "description": "Filtro fecha tarea",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Embalaje_2_Response",
+              "xml": {
+                "name": "isp-sga_embalaje_2_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
     "/galileo/lisa/geninf/isp/sga_entradas": {
       "post": {
         "tags": [
@@ -705,6 +1055,356 @@
         }
       }
     },
+    "/galileo/lisa/geninf/isp/sga_entradas_2": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGAENTRADAS2"
+        ],
+        "description": "SGA Entrdas con Detalle de claves y cantidades",
+        "operationId": "POST_ISP/SGA_ENTRADAS_2",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_fecha_tarea",
+            "in": "formData",
+            "description": "Filtro fecha de tarea",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro empresa de LIBRA",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro almacén de LIBRA",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Entradas_2_Response",
+              "xml": {
+                "name": "isp-sga_entradas_2_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/galileo/lisa/geninf/isp/sga_pc_calendario": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGAPCCALENDARIO"
+        ],
+        "description": "Informe SGA Pedido Compras Calendario",
+        "operationId": "POST_ISP/SGA_PC_CALENDARIO",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro Empresa Libra",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro Almacén Libra",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Pc_Calendario_Response",
+              "xml": {
+                "name": "isp-sga_pc_calendario_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/galileo/lisa/geninf/isp/sga_pedidos_compras": {
+      "post": {
+        "tags": [
+          "gi/ISP/SGAPEDIDOSCOMPRAS"
+        ],
+        "description": "Informe SGA pedidos de compras",
+        "operationId": "POST_ISP/SGA_PEDIDOS_COMPRAS",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "l$token",
+            "in": "query",
+            "description": "Token autenticación Usuario (autenticación en plano)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "l$pag",
+            "in": "query",
+            "description": "Modo paginación: Número de página cuando se utiliza \"l$regs\" con valor distinto a -1",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "l$regs",
+            "in": "query",
+            "description": "Activa Modo paginación: Indica el límite de registros por página. [-1 retorna todos los registros]",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "p_empresa",
+            "in": "formData",
+            "description": "Filtro empresa Libra",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_fecha_pedido",
+            "in": "formData",
+            "description": "Filtro fecha pedido",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro almacen",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comunicacion valida",
+            "schema": {
+              "type": "array",
+              "$ref": "#/definitions/Isp-Sga_Pedidos_Compras_Response",
+              "xml": {
+                "name": "isp-sga_pedidos_compras_response"
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros incorrectos en la llamada",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no existe",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          },
+          "500": {
+            "description": "Errores internos del servidor",
+            "schema": {
+              "type": "string",
+              "xml": {
+                "name": "response"
+              }
+            }
+          }
+        }
+      }
+    },
     "/galileo/lisa/geninf/isp/sga_preparacion": {
       "post": {
         "tags": [
@@ -754,6 +1454,13 @@
             "name": "p_fecha_gen",
             "in": "formData",
             "description": "Filtro Fecha Generacion",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro Almacen",
             "required": false,
             "type": "string"
           }
@@ -866,6 +1573,13 @@
             "name": "p_fecha_tarea",
             "in": "formData",
             "description": "Filtro Fecha Tarea",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "p_almacen",
+            "in": "formData",
+            "description": "Filtro almacén Libra",
             "required": false,
             "type": "string"
           }
@@ -1082,10 +1796,12 @@
                 "type": "string"
               },
               "fecha": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "fecha_timestamp": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "ordenador_so": {
                 "type": "string"
@@ -1115,6 +1831,681 @@
                 "type": "string"
               },
               "d_trabajador": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Entradas_2_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "empresa": {
+                "type": "string"
+              },
+              "fecha_valor": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string"
+              },
+              "fecha_fin": {
+                "type": "string"
+              },
+              "prioridad": {
+                "type": "string"
+              },
+              "maquina": {
+                "type": "string"
+              },
+              "d_maquina": {
+                "type": "string"
+              },
+              "usuario": {
+                "type": "string"
+              },
+              "d_usuario": {
+                "type": "string"
+              },
+              "status_tarea": {
+                "type": "string"
+              },
+              "d_status_tarea": {
+                "type": "string"
+              },
+              "numero_doc_interno": {
+                "type": "string"
+              },
+              "proveedor": {
+                "type": "string"
+              },
+              "numero_doc_externo": {
+                "type": "string"
+              },
+              "fecha_doc_externo": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "almacen": {
+                "type": "string"
+              },
+              "d_almacen": {
+                "type": "string"
+              },
+              "fecha": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "organizacion_compras": {
+                "type": "string"
+              },
+              "serie_numeracion": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "zona_almacen": {
+                "type": "string"
+              },
+              "d_zona_almacen": {
+                "type": "string"
+              },
+              "zona_trabajo": {
+                "type": "string"
+              },
+              "trabajador": {
+                "type": "string"
+              },
+              "d_trabajador": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "d_articulo": {
+                "type": "string"
+              },
+              "numero_lote_pro": {
+                "type": "string"
+              },
+              "numero_lote_int": {
+                "type": "string"
+              },
+              "fecha_movim": {
+                "type": "string"
+              },
+              "cantidad_presentacion": {
+                "type": "string"
+              },
+              "presentacion": {
+                "type": "string"
+              },
+              "numero_palet": {
+                "type": "string"
+              },
+              "numero_tarea": {
+                "type": "string"
+              },
+              "programa": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Pc_Calendario_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "codigo_empresa": {
+                "type": "string"
+              },
+              "organizacion_compras": {
+                "type": "string"
+              },
+              "tipo_pedido": {
+                "type": "string"
+              },
+              "serie_numeracion": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "codigo_proveedor": {
+                "type": "string"
+              },
+              "razon_social": {
+                "type": "string"
+              },
+              "fecha_pedido": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "codigo_almacen": {
+                "type": "string"
+              },
+              "nombre_almacen": {
+                "type": "string"
+              },
+              "usuario_alta": {
+                "type": "string"
+              },
+              "d_usuario_alta": {
+                "type": "string"
+              },
+              "fecha_alta": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status_cierre": {
+                "type": "string"
+              },
+              "d_status_cierre": {
+                "type": "string"
+              },
+              "status_aprobado": {
+                "type": "string"
+              },
+              "d_status_aprobado": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "descripcion": {
+                "type": "string"
+              },
+              "fecha_entrega": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "fecha_entrega_confirm": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "unidades_pedidas": {
+                "type": "string"
+              },
+              "unidades_entregadas": {
+                "type": "string"
+              },
+              "status_cierre_linea": {
+                "type": "string"
+              },
+              "d_status_cierre_linea": {
+                "type": "string"
+              },
+              "status_aprobacion_linea": {
+                "type": "string"
+              },
+              "d_status_aprobacion_linea": {
+                "type": "string"
+              },
+              "forma_farmaceutica": {
+                "type": "string"
+              },
+              "d_formula_farmaceutica": {
+                "type": "string"
+              },
+              "numero_expediente": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "hora_inicio": {
+                "type": "string"
+              },
+              "presentacion_pedido": {
+                "type": "string"
+              },
+              "cantidad": {
+                "type": "string"
+              },
+              "piezas_totales": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Pedidos_Compras_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "codigo_empresa": {
+                "type": "string"
+              },
+              "organizacion_compras": {
+                "type": "string"
+              },
+              "tipo_pedido": {
+                "type": "string"
+              },
+              "serie_numeracion": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "codigo_proveedor": {
+                "type": "string"
+              },
+              "razon_social": {
+                "type": "string"
+              },
+              "fecha_pedido": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "codigo_almacen": {
+                "type": "string"
+              },
+              "nombre": {
+                "type": "string"
+              },
+              "usuario_alta": {
+                "type": "string"
+              },
+              "d_usuario_alta": {
+                "type": "string"
+              },
+              "fecha_alta": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status_cierre": {
+                "type": "string"
+              },
+              "d_status_cierre": {
+                "type": "string"
+              },
+              "status_aprobado": {
+                "type": "string"
+              },
+              "d_status_aprobado": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "descripcion": {
+                "type": "string"
+              },
+              "fecha_entrega": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "fecha_entrega_confirm": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "unidades_pedidas": {
+                "type": "string"
+              },
+              "unidades_entregadas": {
+                "type": "string"
+              },
+              "status_cierre_linea": {
+                "type": "string"
+              },
+              "d_status_cierre_linea": {
+                "type": "string"
+              },
+              "status_aprobacion_linea": {
+                "type": "string"
+              },
+              "d_status_aprobacion_linea": {
+                "type": "string"
+              },
+              "forma_farmaceutica": {
+                "type": "string"
+              },
+              "d_formula_farmaceutica": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Preparacion_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "empresa": {
+                "type": "string"
+              },
+              "tarea": {
+                "type": "string"
+              },
+              "fecha_gen": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "usuario_gen": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "fecha_fin": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "maquina": {
+                "type": "string"
+              },
+              "d_maquina": {
+                "type": "string"
+              },
+              "usuario": {
+                "type": "string"
+              },
+              "d_usuario": {
+                "type": "string"
+              },
+              "observaciones": {
+                "type": "string"
+              },
+              "prioridad": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "almacen": {
+                "type": "string"
+              },
+              "nombre": {
+                "type": "string"
+              },
+              "entidad": {
+                "type": "string"
+              },
+              "org_comercial": {
+                "type": "string"
+              },
+              "ejercicio_pedido": {
+                "type": "string"
+              },
+              "serie_pedido": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "prop_ejer": {
+                "type": "string"
+              },
+              "prop_numero": {
+                "type": "string"
+              },
+              "zona_trabajo": {
+                "type": "string"
+              },
+              "box": {
+                "type": "string"
+              },
+              "motivo_parada": {
+                "type": "string"
+              },
+              "numero_pedido_cliente": {
+                "type": "string"
+              },
+              "trabajador": {
+                "type": "string"
+              },
+              "d_trabajador": {
+                "type": "string"
+              },
+              "ejercicio": {
+                "type": "string"
+              },
+              "numero_propuesta": {
+                "type": "string"
+              },
+              "linea_propuesta": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "descrip_comercial": {
+                "type": "string"
+              },
+              "linea_pedido": {
+                "type": "string"
+              },
+              "codigo_presentacion": {
+                "type": "string"
+              },
+              "cantidad_unidad1_ped": {
+                "type": "string"
+              },
+              "cantidad_unidad1_res": {
+                "type": "string"
+              },
+              "cantidad_facturada": {
+                "type": "string"
+              },
+              "fecha_inicio_lin": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "fecha_fin_lin": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Preparacion_2_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "empresa": {
+                "type": "string"
+              },
+              "tipo_tarea": {
+                "type": "string"
+              },
+              "d_tipo_tarea": {
+                "type": "string"
+              },
+              "maquina": {
+                "type": "string"
+              },
+              "d_maquina": {
+                "type": "string"
+              },
+              "fecha": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "almacen": {
+                "type": "string"
+              },
+              "d_almacen": {
+                "type": "string"
+              },
+              "zona_trabajo": {
+                "type": "string"
+              },
+              "usuario": {
+                "type": "string"
+              },
+              "tareas": {
+                "type": "string"
+              },
+              "cuantas_lineas": {
+                "type": "string"
+              },
+              "cantidad_p": {
+                "type": "string"
+              },
+              "cantidad_1": {
+                "type": "string"
+              },
+              "cantidad_2": {
+                "type": "string"
+              },
+              "tiempo_segundos": {
                 "type": "string"
               }
             }
@@ -1227,10 +2618,12 @@
                 "type": "string"
               },
               "fecha": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "fecha_timestamp": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "numero_tarea": {
                 "type": "string"
@@ -1331,6 +2724,84 @@
         }
       }
     },
+    "Isp-Sga_Calendario_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "codigo_empresa": {
+                "type": "string"
+              },
+              "codigo_almacen": {
+                "type": "string"
+              },
+              "numero_expediente": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "hora_inicio": {
+                "type": "string"
+              },
+              "d_codigo_proveedor": {
+                "type": "string"
+              },
+              "serie_numeracion": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "descripcion": {
+                "type": "string"
+              },
+              "presentacion_pedido": {
+                "type": "string"
+              },
+              "cantidad": {
+                "type": "string"
+              },
+              "piezas_totales": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
     "Isp-Sga_Colocacion_Response": {
       "xml": {
         "name": "registros"
@@ -1379,7 +2850,8 @@
                 "type": "string"
               },
               "fecha_doc_int": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "documento_int": {
                 "type": "string"
@@ -1388,7 +2860,8 @@
                 "type": "string"
               },
               "fecha_doc_ext": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "documento_ext": {
                 "type": "string"
@@ -1535,7 +3008,8 @@
                 "type": "string"
               },
               "fecha_gen_f": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "ubicacion_destino_intermedia": {
                 "type": "string"
@@ -1585,7 +3059,8 @@
                 "type": "string"
               },
               "f_gen_f": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "usuario_gen": {
                 "type": "string"
@@ -1630,7 +3105,8 @@
                 "type": "string"
               },
               "fecha_doc_int": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "documento_int": {
                 "type": "string"
@@ -1782,6 +3258,317 @@
         }
       }
     },
+    "Isp-Sga_Embalaje_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "f_fecha_gen": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "tarea": {
+                "type": "string"
+              },
+              "empresa": {
+                "type": "string"
+              },
+              "org_comercial": {
+                "type": "string"
+              },
+              "ejercicio_pedido": {
+                "type": "string"
+              },
+              "serie_pedido": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "almacen": {
+                "type": "string"
+              },
+              "d_almacen": {
+                "type": "string"
+              },
+              "box_preparacion": {
+                "type": "string"
+              },
+              "zona_almacen": {
+                "type": "string"
+              },
+              "d_zona_almacen": {
+                "type": "string"
+              },
+              "ubicacion": {
+                "type": "string"
+              },
+              "zona_trabajo": {
+                "type": "string"
+              },
+              "fecha_gen": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "usuario_gen": {
+                "type": "string"
+              },
+              "maquina_gen": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "fecha_fin": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "prioridad": {
+                "type": "string"
+              },
+              "maquina": {
+                "type": "string"
+              },
+              "d_maquina": {
+                "type": "string"
+              },
+              "usuario": {
+                "type": "string"
+              },
+              "d_usuario": {
+                "type": "string"
+              },
+              "estatus_tarea": {
+                "type": "string"
+              },
+              "d_status_tarea": {
+                "type": "string"
+              },
+              "motivo_bloqueo": {
+                "type": "string"
+              },
+              "numero_prop": {
+                "type": "string"
+              },
+              "ejercicio_prop": {
+                "type": "string"
+              },
+              "maquina_ant": {
+                "type": "string"
+              },
+              "numero_pedido_cliente": {
+                "type": "string"
+              },
+              "entidad": {
+                "type": "string"
+              },
+              "documento_embalado": {
+                "type": "string"
+              },
+              "trabajador": {
+                "type": "string"
+              },
+              "d_trabajador": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Isp-Sga_Embalaje_2_Response": {
+      "xml": {
+        "name": "registros"
+      },
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reg": {
+            "type": "object",
+            "properties": {
+              "tarea": {
+                "type": "string"
+              },
+              "empresa": {
+                "type": "string"
+              },
+              "org_comercial": {
+                "type": "string"
+              },
+              "ejercicio_pedido": {
+                "type": "string"
+              },
+              "serie_pedido": {
+                "type": "string"
+              },
+              "numero_pedido": {
+                "type": "string"
+              },
+              "almacen": {
+                "type": "string"
+              },
+              "d_almacen": {
+                "type": "string"
+              },
+              "box_preparacion": {
+                "type": "string"
+              },
+              "zona_almacen": {
+                "type": "string"
+              },
+              "d_zona_almacen": {
+                "type": "string"
+              },
+              "ubicacion": {
+                "type": "string"
+              },
+              "zona_trabajo": {
+                "type": "string"
+              },
+              "fecha_gen": {
+                "type": "string"
+              },
+              "usuario_gen": {
+                "type": "string"
+              },
+              "maquina_gen": {
+                "type": "string"
+              },
+              "fecha_inicio": {
+                "type": "string"
+              },
+              "fecha_fin": {
+                "type": "string"
+              },
+              "prioridad": {
+                "type": "string"
+              },
+              "maquina": {
+                "type": "string"
+              },
+              "d_maquina": {
+                "type": "string"
+              },
+              "usuario": {
+                "type": "string"
+              },
+              "d_usuario": {
+                "type": "string"
+              },
+              "estatus_tarea": {
+                "type": "string"
+              },
+              "d_status_tarea": {
+                "type": "string"
+              },
+              "motivo_bloqueo": {
+                "type": "string"
+              },
+              "numero_prop": {
+                "type": "string"
+              },
+              "ejercicio_prop": {
+                "type": "string"
+              },
+              "maquina_ant": {
+                "type": "string"
+              },
+              "numero_pedido_cliente": {
+                "type": "string"
+              },
+              "entidad": {
+                "type": "string"
+              },
+              "documento_embalado": {
+                "type": "string"
+              },
+              "trabajador": {
+                "type": "string"
+              },
+              "d_trabajador": {
+                "type": "string"
+              },
+              "codigo_articulo": {
+                "type": "string"
+              },
+              "numero_lote_int": {
+                "type": "string"
+              },
+              "numero_lote_pro": {
+                "type": "string"
+              },
+              "cantidad_presentacion": {
+                "type": "string"
+              },
+              "presentacion": {
+                "type": "string"
+              },
+              "codigo_zona": {
+                "type": "string"
+              },
+              "d_codigo_zona": {
+                "type": "string"
+              },
+              "fecha_filtro": {
+                "type": "string"
+              }
+            }
+          },
+          "rowstat": {
+            "xml": {
+              "name": "rowstat"
+            },
+            "type": "object",
+            "properties": {
+              "numero_registros": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              },
+              "numero_pagina": {
+                "xml": {
+                  "attribute": true
+                },
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      }
+    },
     "Isp-Sga_Entradas_Response": {
       "xml": {
         "name": "registros"
@@ -1800,7 +3587,8 @@
                 "type": "string"
               },
               "fecha_gen_f": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "usuario_gen": {
                 "type": "string"
@@ -1839,7 +3627,8 @@
                 "type": "string"
               },
               "fecha_doc_externo": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "maquina_ant": {
                 "type": "string"
@@ -1851,7 +3640,8 @@
                 "type": "string"
               },
               "fecha": {
-                "type": "string"
+                "type": "string",
+                "format": "date-time"
               },
               "organizacion_compras": {
                 "type": "string"
@@ -1954,250 +3744,6 @@
           }
         }
       }
-    },
-    "Isp-Sga_Preparacion_Response": {
-      "xml": {
-        "name": "registros"
-      },
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "reg": {
-            "type": "object",
-            "properties": {
-              "empresa": {
-                "type": "string"
-              },
-              "tarea": {
-                "type": "string"
-              },
-              "fecha_gen": {
-                "type": "string"
-              },
-              "usuario_gen": {
-                "type": "string"
-              },
-              "fecha_inicio": {
-                "type": "string"
-              },
-              "fecha_fin": {
-                "type": "string"
-              },
-              "maquina": {
-                "type": "string"
-              },
-              "d_maquina": {
-                "type": "string"
-              },
-              "usuario": {
-                "type": "string"
-              },
-              "d_usuario": {
-                "type": "string"
-              },
-              "observaciones": {
-                "type": "string"
-              },
-              "prioridad": {
-                "type": "string"
-              },
-              "status": {
-                "type": "string"
-              },
-              "almacen": {
-                "type": "string"
-              },
-              "nombre": {
-                "type": "string"
-              },
-              "entidad": {
-                "type": "string"
-              },
-              "org_comercial": {
-                "type": "string"
-              },
-              "ejercicio_pedido": {
-                "type": "string"
-              },
-              "serie_pedido": {
-                "type": "string"
-              },
-              "numero_pedido": {
-                "type": "string"
-              },
-              "prop_ejer": {
-                "type": "string"
-              },
-              "prop_numero": {
-                "type": "string"
-              },
-              "zona_trabajo": {
-                "type": "string"
-              },
-              "box": {
-                "type": "string"
-              },
-              "motivo_parada": {
-                "type": "string"
-              },
-              "numero_pedido_cliente": {
-                "type": "string"
-              },
-              "trabajador": {
-                "type": "string"
-              },
-              "d_trabajador": {
-                "type": "string"
-              },
-              "ejercicio": {
-                "type": "string"
-              },
-              "numero_propuesta": {
-                "type": "string"
-              },
-              "linea_propuesta": {
-                "type": "string"
-              },
-              "codigo_articulo": {
-                "type": "string"
-              },
-              "descrip_comercial": {
-                "type": "string"
-              },
-              "linea_pedido": {
-                "type": "string"
-              },
-              "codigo_presentacion": {
-                "type": "string"
-              },
-              "cantidad_unidad1_ped": {
-                "type": "string"
-              },
-              "cantidad_unidad1_res": {
-                "type": "string"
-              },
-              "cantidad_facturada": {
-                "type": "string"
-              },
-              "fecha_inicio_lin": {
-                "type": "string"
-              },
-              "fecha_fin_lin": {
-                "type": "string"
-              }
-            }
-          },
-          "rowstat": {
-            "xml": {
-              "name": "rowstat"
-            },
-            "type": "object",
-            "properties": {
-              "numero_registros": {
-                "xml": {
-                  "attribute": true
-                },
-                "type": "integer",
-                "format": "int32"
-              },
-              "numero_pagina": {
-                "xml": {
-                  "attribute": true
-                },
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        }
-      }
-    },
-    "Isp-Sga_Preparacion_2_Response": {
-      "xml": {
-        "name": "registros"
-      },
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "reg": {
-            "type": "object",
-            "properties": {
-              "empresa": {
-                "type": "string"
-              },
-              "tipo_tarea": {
-                "type": "string"
-              },
-              "d_tipo_tarea": {
-                "type": "string"
-              },
-              "maquina": {
-                "type": "string"
-              },
-              "d_maquina": {
-                "type": "string"
-              },
-              "fecha": {
-                "type": "string"
-              },
-              "almacen": {
-                "type": "string"
-              },
-              "d_almacen": {
-                "type": "string"
-              },
-              "zona_trabajo": {
-                "type": "string"
-              },
-              "usuario": {
-                "type": "string"
-              },
-              "tareas": {
-                "type": "string"
-              },
-              "cuantas_lineas": {
-                "type": "string"
-              },
-              "cantidad_p": {
-                "type": "string"
-              },
-              "cantidad_1": {
-                "type": "string"
-              },
-              "cantidad_2": {
-                "type": "string"
-              },
-              "tiempo_segundos": {
-                "type": "string"
-              }
-            }
-          },
-          "rowstat": {
-            "xml": {
-              "name": "rowstat"
-            },
-            "type": "object",
-            "properties": {
-              "numero_registros": {
-                "xml": {
-                  "attribute": true
-                },
-                "type": "integer",
-                "format": "int32"
-              },
-              "numero_pagina": {
-                "xml": {
-                  "attribute": true
-                },
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        }
-      }
     }
   },
   "tags": [
@@ -2211,13 +3757,31 @@
       "name": "gi/ISP/SGAACTMAQ3"
     },
     {
+      "name": "gi/ISP/SGACALENDARIO"
+    },
+    {
       "name": "gi/ISP/SGACOLOCACION"
     },
     {
       "name": "gi/ISP/SGACOLOCACION2"
     },
     {
+      "name": "gi/ISP/SGAEMBALAJE"
+    },
+    {
+      "name": "gi/ISP/SGAEMBALAJE2"
+    },
+    {
       "name": "gi/ISP/SGAENTRADAS"
+    },
+    {
+      "name": "gi/ISP/SGAENTRADAS2"
+    },
+    {
+      "name": "gi/ISP/SGAPCCALENDARIO"
+    },
+    {
+      "name": "gi/ISP/SGAPEDIDOSCOMPRAS"
     },
     {
       "name": "gi/ISP/SGAPREPARACION"

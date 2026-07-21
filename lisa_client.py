@@ -4,11 +4,11 @@ lisa_client.py
 Cliente Python para la API de Integración LISA (Libra Fármacos / Plataforma Galileo).
 
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  ENDPOINTS DEL MÓDULO SGA — contrato: swagger.json (EDISA)               ║
+║  ENDPOINTS DEL MÓDULO SGA — contrato: edisa.json (EDISA)                 ║
 ║                                                                          ║
 ║  entradas_almacen · entradas_almacen_2 · colocacion · colocacion_2      ║
-║  preparacion · preparacion_2 · embalaje · actividad_maquina             ║
-║  actividad_maquina_2 · actividad_maquina_historico                      ║
+║  preparacion · preparacion_2 · embalaje · embalaje_2                    ║
+║  actividad_maquina · actividad_maquina_2 · actividad_maquina_historico  ║
 ║                                                                          ║
 ║  Los wrappers heredados (pedidos, albaranes, licitaciones, catálogos)    ║
 ║  viven en `lisa_old_client.py` durante el periodo de deprecación.        ║
@@ -17,8 +17,8 @@ Cliente Python para la API de Integración LISA (Libra Fármacos / Plataforma Ga
 ║  Fechas de PETICIÓN en ISO `AAAA-MM-DD` (jul-2026: la máscara Oracle     ║
 ║  cambió; `dd/mm/aaaa` da ORA-01830 y `dd/mm/aa` se malinterpreta como    ║
 ║  año 1 en silencio). Las fechas de RESPUESTA quedaron mixtas:            ║
-║  entradas/entradas_2/colocacion_2 en dd/mm/aaaa; preparacion(_2)/        ║
-║  embalaje en ISO 8601.                                                   ║
+║  entradas/entradas_2/colocacion_2/embalaje_2 en dd/mm/aaaa;              ║
+║  preparacion(_2)/embalaje en ISO 8601.                                   ║
 ║                                                                          ║
 ║  Uso:  client.entradas_almacen(fecha_gen="2026-06-01", almacen="5460D")  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
@@ -231,7 +231,7 @@ class LisaClient:
         )
 
     # ════════════════════════════════════════════════════════════════════════
-    # Resto de endpoints SGA (contrato swagger.json)
+    # Resto de endpoints SGA (contrato edisa.json)
     # Todos los filtros son opcionales; vacío = sin filtrar.
     # Fechas ISO AAAA-MM-DD.
     # ════════════════════════════════════════════════════════════════════════
@@ -311,6 +311,10 @@ class LisaClient:
         Resumen de preparación por usuario/máquina (tareas, líneas, cantidades,
         tiempo_segundos). OJO: el filtro de fecha es `p_fecha_tarea`,
         no `p_fecha_gen`.
+
+        OJO (verificado 21-jul-2026): los datos siguen congelados — el servidor
+        solo devuelve el periodo 09-feb → 10-abr-2026, sin importar el filtro.
+        Para series vivas de surtido usa `preparacion` (cantidad_unidad1_ped).
         """
         return self._post(
             "/galileo/lisa/geninf/isp/sga_preparacion_2",
@@ -331,11 +335,44 @@ class LisaClient:
         pag: int | None = None,
         regs: int | None = -1,
     ) -> dict:
-        """Tareas de embalaje (empaquetado en box para embarque) del SGA."""
+        """
+        Tareas de embalaje (empaquetado en box para embarque) del SGA.
+        Nivel tarea; NO expone cantidades — para piezas usa embalaje_2.
+        """
         return self._post(
             "/galileo/lisa/geninf/isp/sga_embalaje",
             {
                 "p_fecha_gen": fecha_gen,
+                "p_almacen": almacen,
+                "p_empresa": empresa,
+            },
+            pag=pag,
+            regs=regs,
+        )
+
+    def embalaje_2(
+        self,
+        fecha_tarea: str = "",
+        almacen: str = "",
+        empresa: str = "",
+        pag: int | None = None,
+        regs: int | None = -1,
+    ) -> dict:
+        """
+        Embalaje con detalle de LÍNEA: artículo, lote y `cantidad_presentacion`
+        (piezas) — el único endpoint de embalaje que expone cantidades.
+        Incluye `tarea` para ligar con embalaje. OJO: el filtro de fecha es
+        `p_fecha_tarea`, no `p_fecha_gen`.
+
+        OJO (verificado 21-jul-2026): el servidor IGNORA el filtro de fecha
+        (devuelve toda la historia, igual que entradas_almacen_2); se acepta el
+        parámetro por simetría/futuro. `p_almacen` sí filtra. A diferencia de
+        embalaje (ISO 8601), responde las fechas en `dd/mm/aaaa HH:MM:SS`.
+        """
+        return self._post(
+            "/galileo/lisa/geninf/isp/sga_embalaje_2",
+            {
+                "p_fecha_tarea": fecha_tarea,
                 "p_almacen": almacen,
                 "p_empresa": empresa,
             },

@@ -55,13 +55,13 @@ API is again the single source for entradas.
 
 ## `lisa_client.py` (the only hand-written module)
 
-SGA-only REST client mirroring `swagger.json` (the final EDISA contract, 9 SGA endpoints).
-Constraints encoded in the file:
+SGA-only REST client mirroring `edisa.json` (the current EDISA contract, jul-2026; supersedes
+`swagger.json`). Constraints encoded in the file:
 - **Only SGA-module endpoints belong here.** `entradas_almacen` (sga_entradas) is the
   canonical one for the repo's analyses (`fecha_gen` required); the client also wraps
-  `colocacion(_2)`, `preparacion(_2)`, `embalaje` and `actividad_maquina(_2/_historico)`,
-  all with optional filters. Note: `preparacion_2` filters by `p_fecha_tarea`, not
-  `p_fecha_gen`. Legacy non-SGA wrappers (pedidos, albaranes, etc.) are meant to live in
+  `colocacion(_2)`, `preparacion(_2)`, `embalaje(_2)` and `actividad_maquina(_2/_historico)`,
+  all with optional filters. Note: `preparacion_2` and `embalaje_2` filter by `p_fecha_tarea`,
+  not `p_fecha_gen`. Legacy non-SGA wrappers (pedidos, albaranes, etc.) are meant to live in
   `lisa_old_client.py` (referenced but not yet present) — do not add them to `lisa_client.py`.
 - "Bring all records" is `l$regs=-1`, **not** `l$pag=-1` — confusing them silently drops to a
   default page size.
@@ -76,6 +76,7 @@ Constraints encoded in the file:
 |----------|--------|---------|
 | `fuente_unica_entradas.ipynb` | API | **Canonical entradas notebook.** API import → date cleaning → categorical ordering → EDA → hourly handheld workload dashboard (§6 reuses `df_limpio`). |
 | `entradas_almacen.ipynb` | API | Minimal API → DataFrame → CSV extraction. |
+| `piezas_por_dia.ipynb` | API | Daily pieces moved per warehouse area (one SGA endpoint per area); single 4-series line chart. SURTIDO stays on `sga_preparacion` v1 (`cantidad_unidad1_ped` proxy — v2 frozen at 10-abr-2026); VERIFICACIÓN uses `sga_embalaje_2` (`cantidad_presentacion`). |
 | `prediccion_horas_hombre.ipynb` | API | Hourly man-hours forecast. SARIMA (s=24, weekly seasonality via Fourier exog, period 168) + Prophet. |
 | `Timeseries.ipynb` | — | Generic monthly SARIMA + Prophet reference notebook. |
 | `ZeusPipeline.ipynb` | Google Sheets (Colab) | Legacy ingestion pipeline for all warehouse domains. |
